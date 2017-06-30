@@ -1,0 +1,10 @@
+{
+  "name": "express-parameters",
+  "main": "server.js",
+  "dependencies": {
+    "await": "^0.2.6",
+    "body-parser": "^1.17.2",
+    "express": "^4.10.8",
+    "xmlhttprequest": "^1.8.0"
+  }
+}

@@ -1,0 +1,137 @@
+.modal-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+  display: table;
+  transition: opacity .3s ease;
+}
+
+.modal-wrapper {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.modal-container {
+  width: 300px;
+  margin: 0px auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+  transition: all .3s ease;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.modal-header h3 {
+  margin-top: 0;
+  color: #42b983;
+}
+
+.modal-body {
+  margin: 20px 0;
+}
+
+.modal-default-button {
+  float: right;
+}
+
+/*
+ * The following styles are auto-applied to elements with
+ * transition="modal" when their visibility is toggled
+ * by Vue.js.
+ *
+ * You can easily play with the modal transition by editing
+ * these styles.
+ */
+
+.modal-enter {
+  opacity: 0;
+}
+
+.modal-leave-active {
+  opacity: 0;
+}
+
+.modal-enter .modal-container,
+.modal-leave-active .modal-container {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+}
+
+$bg-black: #101010;
+$bg-gray: #f2f2f2;
+$bg-red: #df0923;
+
+$text-white: #fff;
+$text-black: #000;
+$text-gray: #d5d5d5;
+
+.btn,
+input[type='submit'].btn{
+  display: inline-block;
+  padding: .7em 1em;
+  background-color: $bg-gray;
+  color: $text-white;
+  border: none;
+  text-align: center;
+  transition: .25s background-color;
+  text-decoration: none;
+
+  &:not([disabled]):not(.btn--nohover):hover{
+    color: $text-white;
+    background-color: $bg-black;
+  }
+
+  &--red{
+    background-color: $bg-red;
+  }
+
+  &--gray{
+    background-color: $text-gray;
+  }
+
+  &--transparent{
+    background-color: transparent;
+    color: $text-black;
+  }
+
+  &--transparent-white{
+    background-color: transparent;
+    color: $text-white;
+  }
+}
+
+// Styling wrappers
+html, body {
+  height: 100vh;
+}
+body{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-content: stretch;
+  align-items: stretch;
+}
+#top, #bottom{
+  width: 100%;
+  flex: 1 1 auto;
+  text-align: center;
+  padding: 1em;
+}
+
+#top {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+}
+
+#bottom {
+  background: $bg-black
+}
+
