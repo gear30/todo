@@ -1,19 +1,94 @@
-   
-var app = new Vue({
+var TodoListitem = Vue.extend({
+  template: `<div class="form-inline container" id="app" >
+              <div class="col-1" style="display:inline;border: 1px solid;min-height: 27px">
+                {{ itemindex + 1 }} 
+              </div>
+              <div class="col-3" style="display:inline;border: 1px solid;min-height: 27px">
+                {{ todoitem.taskname }}
+              </div>
+              <div class="col" style="display:inline;border: 1px solid;min-height: 27px">
+                {{ todoitem.status }}
+              </div>
+              <div class="col" style="display:inline;border: 1px solid;min-height: 27px">
+                {{ todoitem.date }}
+              </div>
+              <div class="col-1" style="display:inline;border: 1px solid;min-height: 27px">
+                <button type="button" id="btnedit" v-on:click="edit(todoitem.id)" style="padding: 0;border: none;background: none;" ><i class="fa fa-pencil" aria-hidden="true"></i></button>
+              </div>
+              <div class="col-1" style="display:inline;border: 1px solid;min-height: 27px">
+                <button type="button" id="btndelete" v-on:click="deleteitem(todoitem.id)" style="padding: 0;border: none;background: none;" ><i class="fa fa-trash" aria-hidden="true"></i></button>
+              </div>
+            </div> `,
+  props: ['itemindex','todoitem','stage'],
+  methods: {
+    edit: function(id)
+    {
+      axios.post('http://localhost:8080/getById', { taskId:id })
+      .then(response => {
+        var task = response.data;
+        if(task !== null)
+        {
+          var date = task.date.split('/');
+
+          if(date.length === 3)
+          {
+            this.stage.todoitem = {taskname:task.taskname, statusselect: task.status, taskDetail: task.datail, taskid: task.id, dateselect: date[0],monthselect: date[1],yearselect: date[2]}; 
+          }
+          else
+          {
+            this.stage.todoitem = {taskname:task.taskname, statusselect: task.status, taskDetail: task.datail, taskid: task.id, dateselect: '1',monthselect: '1',yearselect: '2017'}; 
+          }
+          this.$emit('input', this.stage );
+        }
+      })
+      .catch(e => {
+        console.log(e);
+      });
+    },
+    deleteitem: function(id)
+    {
+      axios.post('http://localhost:8080/delete', { taskId:id })
+        .then(response => {
+          this.stage.todolists = response.data;
+          this.stage.todoitem.taskname = '';
+          this.stage.todoitem.dateselect = '1';
+          this.stage.todoitem.monthselect = '1';
+          this.stage.todoitem.yearselect = '2017';
+          this.stage.todoitem.statusselect = 'waitting';
+          this.stage.todoitem.taskDetail = '';
+          this.stage.todoitem.taskid = '';
+          this.$emit('input', this.stage );
+        })
+        .catch(e => { 
+          console.log(e);
+        });
+    }
+  }
+})
+
+// registered the tree component with a dif
+
+Vue.component('todoitem',TodoListitem)
+
+new Vue({
   el: '#app',
   mounted:function(){
     this.init() //method1 will execute at pageload
   },
   data: {
-    todolists: [],
-    statusselect: 'waitting',
-    taskname: '',
-    taskid: '',
-    taskDetail: '',
+    stage: {
+      todolists: [],
+      todoitem:{
+        statusselect: 'waitting',
+        taskname: '',
+        taskid: '',
+        taskDetail: '',
+        dateselect: '1',
+        monthselect: '1',
+        yearselect: '2017'
+      }
+    },
     msgDialog: '',
-    dateselect: '1',
-    monthselect: '1',
-    yearselect: '2017',
     isSave: true,
     status: [],
     date: [
@@ -77,33 +152,9 @@ var app = new Vue({
       { text: '2027', value: '2027' }
     ]
   },
-  components: {
-    confirm: {
-      props: {
-        class: String, 
-        sureClass: String,
-        func: {
-          type: Function,
-          required: true
-        }
-      },
-      data: function() {
-        return {
-          confirm: false
-        };
-      },      
-      template: '#confirm-template',
-    }
-  },
   methods: {
     init: function()
     {
-      axios.post('http://localhost:8080/dateList', { })
-      .then(response => {
-//        console.log(response);
-      })
-      .catch(e => {
-      })
       axios.post('http://localhost:8080/statusList', { })
       .then(response => {
         this.status = response.data;
@@ -112,7 +163,8 @@ var app = new Vue({
       })
       axios.post('http://localhost:8080/getById', { taskId: '' })
       .then(response => {
-        this.todolists = response.data;
+        this.stage.todolists = response.data;
+        console.log(response.data);
       })
       .catch(e => {
       })
@@ -129,74 +181,33 @@ var app = new Vue({
     },
     clearDisplay: function()
     {
-      this.taskname = '';
-      this.dateselect = '1';
-      this.monthselect = '1';
-      this.yearselect = '2017';
-      this.statusselect = 'waitting';
-      this.taskDetail = '';
-      this.taskid = '';
-      this.displayChange();
-    },
-    edit: function(id)
-    {
-      axios.post('http://localhost:8080/getById', { taskId:id })
-        .then(response => {
-          var task = response.data;
-          if(task !== null)
-          {
-            this.taskname = task.taskname;
-            var date = task.date.split('/');
-
-            if(date.length === 3)
-            {
-              this.dateselect = date[0];
-              this.monthselect = date[1];
-              this.yearselect = date[2];            
-            }
-            else
-            {
-              this.dateselect = '1';
-              this.monthselect = '1';
-              this.yearselect = '2017';            
-            }
-            this.statusselect = task.status;
-            this.taskDetail = task.datail;
-            this.taskid = task.id;
-          }
-
-        })
-        .catch(e => {
-        });
-    },
-    deleteitem: function(id)
-    {
-      axios.post('http://localhost:8080/delete', { taskId:id })
-        .then(response => {
-          this.todolists = response.data;
-        })
-        .catch(e => {
-        });
+      this.stage.todoitem.taskname = '';
+      this.stage.todoitem.dateselect = '1';
+      this.stage.todoitem.monthselect = '1';
+      this.stage.todoitem.yearselect = '2017';
+      this.stage.todoitem.statusselect = 'waitting';
+      this.stage.todoitem.taskDetail = '';
+      this.stage.todoitem.taskid = '';
     },
     save: function(id)
     {
-      if(id === ''){
+      var date = this.stage.todoitem.dateselect + '/' + this.stage.todoitem.monthselect + '/' + this.stage.todoitem.yearselect;
+      if(id === '' || id === undefined){
+
         id = this.guid();
-        var date = this.dateselect + '/' + this.monthselect + '/' + this.yearselect;
-        var todo = { id : id, taskname: this.taskname, date: date, status: this.statusselect, datail: this.taskDetail };
+        var todo = { id : id, taskname: this.stage.todoitem.taskname, date: date, status: this.stage.todoitem.statusselect, datail: this.stage.todoitem.taskDetail };
         axios.post('http://localhost:8080/add', {body: todo })
         .then(response => {
-          this.todolists = response.data;
+          this.stage.todolists = response.data;
         })
         .catch(e => {
         });
       }
       else{
-        var date = this.dateselect + '/' + this.monthselect + '/' + this.yearselect;
-        var todo = { id : id, taskname: this.taskname, date: date, status: this.statusselect, datail: this.taskDetail };
+        var todo = { id : id, taskname: this.stage.todoitem.taskname, date: date, status: this.stage.todoitem.statusselect, datail: this.stage.todoitem.taskDetail };
         axios.post('http://localhost:8080/update', {body: todo })
         .then(response => {
-          this.todolists = response.data;
+          this.stage.todolists = response.data;
         })
         .catch(e => {
         });
@@ -214,4 +225,3 @@ var app = new Vue({
     }
   }
 })
-

@@ -26,7 +26,6 @@ console.log('Server started! At http://localhost:' + port);
 // routes will go here
 app.post('/add', function(req, res) {
   var task = req.param('body');
-
   var tasklist=readTodoList();
   tasklist.push(task);
   var json = JSON.stringify(tasklist);
@@ -61,7 +60,6 @@ app.post('/getById', function(req, res) {
   {
     allTask = allTask.find(o => o.id === taskId);
   }
-
   res.send(allTask);
 });
 

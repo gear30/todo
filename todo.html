@@ -14,17 +14,7 @@
   <script src="https://unpkg.com/axios@0.12.0/dist/axios.min.js"></script>
   <link rel="stylesheet" href="./font/css/font-awesome.min.css">
   <link rel="stylesheet" href="./todo.css">
-  <script>
-  $(function() {
-    $("#datepicker").datepicker({
-      onSelect: function() { 
-        console.log(document.getElementById("datepicker").value);
-        dateselect  = document.getElementById("datepicker").value; 
-      }
-    }
-    );
-  });
-  </script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 </head>
 <body>
   <div class="container" id="app">
@@ -32,13 +22,13 @@
       <div class="row"> 
         <div class="container col-8">        
           <label class="control-label">Task name</label>
-          <input type="text" v-model="taskname" class="form-control" id="taskname" name="taskname" v-on:change="displayChange" />
+          <input type="text" v-model="stage.todoitem.taskname" class="form-control" id="taskname" name="taskname" v-on:change="displayChange" />
         </div>
       </div>
       <div class="row"> 
         <div class="container col-8">        
           <label  class="control-label">Status</label>
-          <select class="form-control" v-model="statusselect" v-on:change="displayChange">
+          <select class="form-control" v-model="stage.todoitem.statusselect" v-on:change="displayChange">
             <option v-for = "item in status" v-bind:value="item.value"> {{ item.text }} </option>
           </select>
         </div>
@@ -48,17 +38,17 @@
           <label class="control-label">Date Time</label>
           <div class="form-inline col-md-10">
             <div class="col-md-2" style="display:inline">
-              <select id="selectDate" class="form-control" v-model="dateselect" >
+              <select id="selectDate" class="form-control" v-model="stage.todoitem.dateselect" >
                 <option v-for = "day in date" v-bind:value="day.value"> {{ day.text }} </option>
               </select>
             </div>
             <div class="col-md-4" style="display:inline">
-              <select id="selectMonth" class="form-control" v-model="monthselect" >
+              <select id="selectMonth" class="form-control" v-model="stage.todoitem.monthselect" >
                 <option v-for = "month in months" v-bind:value="month.value"> {{ month.text }} </option>
               </select>
             </div>
             <div class="col-md-4" style="display:inline">
-              <select id="selectYear" class="form-control" v-model="yearselect" >
+              <select id="selectYear" class="form-control" v-model="stage.todoitem.yearselect" >
                 <option v-for = "year in years" v-bind:value="year.value"> {{ year.text }} </option>
               </select>
             </div>
@@ -68,12 +58,12 @@
       <div class="row"> 
         <div class="container col-8 align-text-top" style="vertical-align:top;">        
           <label class="control-label">Task Detail</label>
-          <textarea class="form-control" v-model='taskDetail'></textarea>
+          <textarea class="form-control" v-model='stage.todoitem.taskDetail'></textarea>
         </div>
       </div>
       <div class="row justify-content-md-center"> 
         <div class="container col-4 mt-3">
-          <button type="button" id="btnsave" :disabled=isSave class="btn btn-primary" v-on:click="save(taskid)">Add/Save</button>
+          <button type="button" id="btnsave" :disabled=isSave class="btn btn-primary" v-on:click="save(stage.todoitem.taskid)">Add/Save</button>
           <button type="button" class="btn btn-default" v-on:click="clearDisplay">Clear</button>
         </div>
       </div>
@@ -101,26 +91,7 @@
               Delete
             </div>
           </div>        
-          <div class="form-inline container" v-for = "(item, index) in todolists">
-            <div class="col-1" style="display:inline;border: 1px solid;min-height: 27px">
-              {{ index + 1 }}
-            </div>
-            <div class="col-3" style="display:inline;border: 1px solid;min-height: 27px">
-              {{ item.taskname }}
-            </div>
-            <div class="col" style="display:inline;border: 1px solid;min-height: 27px">
-              {{ item.status }}
-            </div>
-            <div class="col" style="display:inline;border: 1px solid;min-height: 27px">
-              {{ item.date }}
-            </div>
-            <div class="col-1" style="display:inline;border: 1px solid;min-height: 27px">
-              <button type="button" id="btnedit" v-on:click="edit(item.id)" style="padding: 0;border: none;background: none;" ><i class="fa fa-pencil" aria-hidden="true"></i></button>
-            </div>
-            <div class="col-1" style="display:inline;border: 1px solid;min-height: 27px">
-              <button type="button" id="btndelete" v-on:click="deleteitem(item.id)" style="padding: 0;border: none;background: none;" ><i class="fa fa-trash" aria-hidden="true"></i></button>
-            </div>
-          </div> 
+          <todoitem v-for = "(item, index) in stage.todolists" :todoitem="item" :itemindex="index" :stage="stage" v-model="stage"></todoitem>
         </div>        
       </div>
     </div>
