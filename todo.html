@@ -18,6 +18,7 @@
 </head>
 <body>
   <div class="container" id="app">
+    <deletemodel :show.sync="stage.showModal" :deleteId="stage.deleteId" :stage="stage" v-model="stage"></deletemodel>
     <div class="container col-8 mt-5" >
       <div class="row"> 
         <div class="container col-8">        

@@ -47,7 +47,59 @@ var TodoListitem = Vue.extend({
     },
     deleteitem: function(id)
     {
-      axios.post('http://localhost:8080/delete', { taskId:id })
+      this.stage.showModal = true;
+      this.stage.deleteId = id;
+      // axios.post('http://localhost:8080/delete', { taskId:id })
+      //   .then(response => {
+      //     this.stage.todolists = response.data;
+      //     this.stage.todoitem.taskname = '';
+      //     this.stage.todoitem.dateselect = '1';
+      //     this.stage.todoitem.monthselect = '1';
+      //     this.stage.todoitem.yearselect = '2017';
+      //     this.stage.todoitem.statusselect = 'waitting';
+      //     this.stage.todoitem.taskDetail = '';
+      //     this.stage.todoitem.taskid = '';
+      //     this.$emit('input', this.stage );
+      //   })
+      //   .catch(e => { 
+      //     console.log(e);
+      //   });
+    }
+  }
+})
+
+// registered the tree component with a dif
+
+Vue.component('todoitem',TodoListitem)
+
+var deletemodel = Vue.extend({
+  template: `  <div class="modal-mask" v-show="stage.showModal" transition="modal">
+        <div class="modal-container">
+
+            <div class="modal-header">
+                <h3>Confirm</h3>
+            </div>
+
+            <div class="modal-body">
+                <label class="form-label">
+                    Delete this item?
+                </label>
+            </div>
+
+            <div class="modal-footer text-right">
+                <button class="modal-default-button" @click="deletePost()">
+                    Yes
+                </button>
+                <button class="modal-default-button" @click="noPost()">
+                    No
+                </button>
+            </div>
+        </div>
+    </div>`,
+  props: ['show', 'deleteId', 'stage'],
+  methods: {
+    deletePost: function () {
+      axios.post('http://localhost:8080/delete', { taskId: this.deleteId })
         .then(response => {
           this.stage.todolists = response.data;
           this.stage.todoitem.taskname = '';
@@ -62,13 +114,16 @@ var TodoListitem = Vue.extend({
         .catch(e => { 
           console.log(e);
         });
+      this.stage.showModal = false;
+    },
+    noPost: function () {
+      // Insert AJAX call here...
+      this.stage.showModal = false;
     }
   }
 })
 
-// registered the tree component with a dif
-
-Vue.component('todoitem',TodoListitem)
+Vue.component('deletemodel',deletemodel)
 
 new Vue({
   el: '#app',
@@ -86,7 +141,9 @@ new Vue({
         dateselect: '1',
         monthselect: '1',
         yearselect: '2017'
-      }
+      },
+      showModal: false,
+      deleteId: ''
     },
     msgDialog: '',
     isSave: true,
